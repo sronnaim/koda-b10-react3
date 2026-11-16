@@ -1,6 +1,7 @@
 import Search from "./components/Search.jsx";
 import List from "./components/List.jsx";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 
 async function getCount() {
   const res = await fetch("https://rickandmortyapi.com/api/character")
@@ -64,7 +65,7 @@ async function findByName(query) {
 
 function App() {
   const [chars, setChars] = useState([])
-  const [query, setQuery] = useState("")
+  const [searchParams] = useSearchParams()
 
   useEffect(() => {
     async function getRandomChars(count) {
@@ -87,17 +88,19 @@ function App() {
       setChars(chars)
     }
 
-    if (!query)
+    const q = searchParams.get('q')
+
+    if (!q)
       getRandomChars(12).catch((e) => console.error(e))
     else
-      processQuery(query)
+      processQuery(q)
 
-  }, [query, setChars])
+  }, [searchParams])
 
   return (
     <main className="min-w-screen flex items-center flex-col gap-4 px-12 py-6">
       <h1 className="text-4xl font-bold">Rick <span className="text-emerald-400">and</span> Morty Characters</h1>
-      <Search setQuery={setQuery} />
+      <Search />
       <List chars={chars} />
     </main>
   )
